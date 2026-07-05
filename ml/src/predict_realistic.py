@@ -5,6 +5,7 @@ from risk_scoring import calculate_risk_score, get_risk_label
 
 
 INPUT_PATH = "../data/sample/transactions_sample.csv"
+OUTPUT_PATH = "../data/sample/fraud_report_sample.csv"
 
 
 def generate_explanation(row) -> str:
@@ -42,19 +43,27 @@ def main():
     engineered_df["risk_label"] = engineered_df["risk_score"].apply(get_risk_label)
     engineered_df["explanation"] = engineered_df.apply(generate_explanation, axis=1)
 
-    columns_to_show = [
+    report_columns = [
         "transaction_id",
         "user_id",
+        "timestamp",
         "amount",
         "merchant",
+        "category",
         "location",
+        "device_id",
+        "transaction_type",
         "risk_score",
         "risk_label",
         "explanation",
     ]
 
-    print(engineered_df[columns_to_show])
+    report_df = engineered_df[report_columns]
 
+    print(report_df)
+
+    report_df.to_csv(OUTPUT_PATH, index=False)
+    print(f"\nFraud report saved to {OUTPUT_PATH}")
 
 if __name__ == "__main__":
     main()
