@@ -1,0 +1,11 @@
+transaction_id,user_id,timestamp,amount,merchant,category,location,device_id,transaction_type
+TXN001,U001,2026-07-01 10:15:00,1200,Amazon,Shopping,Mumbai,D001,Card
+TXN002,U001,2026-07-01 11:20:00,850,Swiggy,Food,Mumbai,D001,UPI
+TXN003,U001,2026-07-02 02:45:00,95000,Unknown Electronics,Shopping,Delhi,D009,Card
+TXN004,U002,2026-07-01 14:10:00,500,Uber,Travel,Bangalore,D002,UPI
+TXN005,U002,2026-07-01 14:12:00,700,Uber,Travel,Bangalore,D002,UPI
+TXN006,U002,2026-07-01 14:15:00,68000,Luxury Watches,Shopping,Dubai,D015,Card
+TXN007,U003,2026-07-01 09:00:00,300,Starbucks,Food,Pune,D003,Card
+TXN008,U003,2026-07-01 09:05:00,320,Starbucks,Food,Pune,D003,Card
+TXN009,U003,2026-07-01 09:08:00,45000,Crypto Exchange,Finance,Singapore,D020,Card
+TXN010,U004,2026-07-03 18:30:00,1500,Zara,Shopping,Delhi,D004,Card
