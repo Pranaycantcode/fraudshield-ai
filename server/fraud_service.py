@@ -4,6 +4,7 @@ import pandas as pd
 
 
 from fastapi import UploadFile
+from fastapi import HTTPException
 
 
 ML_SRC_PATH = Path(__file__).resolve().parents[1] / "ml" / "src"
@@ -15,8 +16,52 @@ from explanation import generate_explanation
 from analytics import generate_dashboard_analytics, generate_summary
 
 
+REQUIRED_COLUMNS = {
+    "transaction_id",
+    "user_id",
+    "timestamp",
+    "amount",
+    "merchant",
+    "category",
+    "location",
+    "device_id",
+    "transaction_type",
+}
+
+def validate_transaction_csv(df: pd.DataFrame):
+    missing_columns = REQUIRED_COLUMNS - set(df.columns)
+
+    if missing_columns:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Missing required columns: {', '.join(sorted(missing_columns))}",
+        )
+
+    if df.empty:
+        raise HTTPException(
+            status_code=400,
+            detail="Uploaded CSV is empty.",
+        )
+
+    try:
+        pd.to_datetime(df["timestamp"])
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid timestamp format. Use YYYY-MM-DD HH:MM:SS.",
+        )
+
+    if not pd.api.types.is_numeric_dtype(df["amount"]):
+        raise HTTPException(
+            status_code=400,
+            detail="Amount column must contain numeric values.",
+        )
+
+
 async def process_transaction_csv(file: UploadFile):
     df = pd.read_csv(file.file)
+    
+    validate_transaction_csv(df)
 
     engineered_df = engineer_transaction_features(df)
 
