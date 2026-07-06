@@ -1,6 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 type Summary = {
   total_transactions: number;
@@ -23,10 +31,24 @@ type Transaction = {
   explanation: string;
 };
 
+type Analytics = {
+  risk_distribution: Record<string, number>;
+  category_risk: Record<string, number>;
+  location_risk: Record<string, number>;
+};
+
 type ApiResponse = {
   summary: Summary;
+  analytics: Analytics;
   transactions: Transaction[];
 };
+
+function objectToChartData(data: Record<string, number>) {
+  return Object.entries(data).map(([name, value]) => ({
+    name,
+    value,
+  }));
+}
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -110,6 +132,23 @@ export default function Home() {
               />
             </div>
 
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+              <ChartCard
+                title="Risk Distribution"
+                data={objectToChartData(data.analytics.risk_distribution)}
+              />
+
+              <ChartCard
+                title="Average Risk by Category"
+                data={objectToChartData(data.analytics.category_risk)}
+              />
+
+              <ChartCard
+                title="Average Risk by Location"
+                data={objectToChartData(data.analytics.location_risk)}
+              />
+            </div>
+
             <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
               <div className="p-5 border-b border-slate-800">
                 <h2 className="text-xl font-semibold">Transaction Results</h2>
@@ -174,16 +213,59 @@ function SummaryCard({
   );
 }
 
+function ChartCard({
+  title,
+  data,
+}: {
+  title: string;
+  data: { name: string; value: number }[];
+}) {
+  return (
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <h3 className="text-sm font-semibold text-slate-300 mb-4">{title}</h3>
+
+      <div className="h-64">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data}>
+            <XAxis
+              dataKey="name"
+              stroke="#94a3b8"
+              fontSize={12}
+              interval={0}
+              angle={-20}
+              textAnchor="end"
+              height={60}
+            />
+            <YAxis stroke="#94a3b8" fontSize={12} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "#020617",
+                border: "1px solid #1e293b",
+                borderRadius: "12px",
+              }}
+              labelStyle={{ color: "#ffffff" }}
+              itemStyle={{ color: "#ffffff" }}
+            />
+            <Bar dataKey="value" fill="#06b6d4" radius={[8, 8, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
 function RiskBadge({ label }: { label: string }) {
   const className =
     label === "High Risk"
       ? "bg-red-500/20 text-red-300"
       : label === "Suspicious"
-      ? "bg-yellow-500/20 text-yellow-300"
-      : "bg-green-500/20 text-green-300";
+        ? "bg-yellow-500/20 text-yellow-300"
+        : "bg-green-500/20 text-green-300";
 
   return (
-    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${className}`}>
+    <span
+      className={`rounded-full px-3 py-1 text-xs font-semibold ${className}`}
+    >
       {label}
     </span>
   );
