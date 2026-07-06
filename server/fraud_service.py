@@ -14,6 +14,7 @@ from feature_engineering import engineer_transaction_features
 from risk_scoring import calculate_risk_score, get_risk_label
 from explanation import generate_explanation
 from analytics import generate_dashboard_analytics, generate_summary
+from report import get_high_risk_transactions, get_all_transactions
 
 
 REQUIRED_COLUMNS = {
@@ -93,11 +94,7 @@ async def process_transaction_csv(file: UploadFile):
 
     return {
     "summary": summary,
-    "analytics": {
-        "risk_distribution": analytics["risk_distribution"],
-        "category_risk": analytics["category_risk"],
-        "location_risk": analytics["location_risk"],
-    },
-    "high_risk_transactions": analytics["high_risk_transactions"],
-    "transactions": report_df.to_dict(orient="records"),
+    "analytics": analytics,
+    "high_risk_transactions": get_high_risk_transactions(report_df),
+    "transactions": get_all_transactions(report_df),
 }

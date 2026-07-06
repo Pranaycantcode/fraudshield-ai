@@ -17,15 +17,10 @@ def generate_dashboard_analytics(report_df):
         .to_dict()
     )
 
-    high_risk_transactions = report_df[
-        report_df["risk_label"] == "High Risk"
-    ].to_dict(orient="records")
-
     return {
         "risk_distribution": risk_distribution,
         "category_risk": category_risk,
         "location_risk": location_risk,
-        "high_risk_transactions": high_risk_transactions,
     }
 
 
