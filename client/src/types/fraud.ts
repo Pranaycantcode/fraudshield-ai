@@ -28,5 +28,6 @@ export type Analytics = {
 export type ApiResponse = {
   summary: Summary;
   analytics: Analytics;
+  high_risk_transactions: Transaction[];
   transactions: Transaction[];
 };

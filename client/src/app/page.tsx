@@ -15,7 +15,7 @@ import { SummaryCard } from "@/components/SummaryCard";
 import { ChartCard } from "@/components/ChartCard";
 import { TransactionTable } from "@/components/TransactionTable";
 import { FileUpload } from "@/components/FileUpload";
-
+import { HighRiskTransactions } from "@/components/HighRiskTransactions";
 
 function objectToChartData(data: Record<string, number>) {
   return Object.entries(data).map(([name, value]) => ({
@@ -24,9 +24,7 @@ function objectToChartData(data: Record<string, number>) {
   }));
 }
 
-
 export default function Home() {
-  
   const [data, setData] = useState<ApiResponse | null>(null);
 
   return (
@@ -85,6 +83,8 @@ export default function Home() {
               />
             </div>
 
+            <HighRiskTransactions transactions={data.high_risk_transactions} />
+
             <div className="flex justify-end mb-4">
               <button
                 onClick={() => downloadCsv(data.transactions)}
@@ -95,9 +95,7 @@ export default function Home() {
             </div>
 
             <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-          
               <TransactionTable transactions={data.transactions} />
-
             </div>
           </>
         )}
