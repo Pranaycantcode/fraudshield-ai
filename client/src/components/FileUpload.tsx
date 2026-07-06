@@ -29,22 +29,27 @@ export function FileUpload({ onResult }: FileUploadProps) {
       );
 
       if (!response.ok) {
+        const errorData = await response.json();
+
         throw new Error(
-          "Failed to analyze CSV. Please check your file format.",
+          errorData.detail ||
+            "Failed to analyze CSV. Please check your file format.",
         );
       }
 
       const result = await response.json();
       onResult(result);
     } catch (error) {
-      console.error(error);
+  console.error(error);
 
-      alert(
-        "Could not connect to the FraudShield API. Please make sure the backend server is running.",
-      );
-    } finally {
-      setLoading(false);
-    }
+  alert(
+    error instanceof Error
+      ? error.message
+      : "Something went wrong while analyzing the file."
+  );
+} finally {
+  setLoading(false);
+}
   };
 
   return (
