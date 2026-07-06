@@ -14,20 +14,37 @@ export function FileUpload({ onResult }: FileUploadProps) {
   const handleUpload = async () => {
     if (!file) return;
 
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const formData = new FormData();
-    formData.append("file", file);
+      const formData = new FormData();
+      formData.append("file", file);
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/predict`, {
-      method: "POST",
-      body: formData,
-    });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/predict`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
 
-    const result = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          "Failed to analyze CSV. Please check your file format.",
+        );
+      }
 
-    onResult(result);
-    setLoading(false);
+      const result = await response.json();
+      onResult(result);
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        "Could not connect to the FraudShield API. Please make sure the backend server is running.",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
