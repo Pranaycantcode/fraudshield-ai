@@ -9,39 +9,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { ApiResponse } from "@/types/fraud";
+import { downloadCsv } from "@/lib/csv";
 
-type Summary = {
-  total_transactions: number;
-  high_risk_count: number;
-  suspicious_count: number;
-  safe_count: number;
-  fraud_risk_percentage: number;
-};
-
-type Transaction = {
-  transaction_id: string;
-  user_id: string;
-  timestamp: string;
-  amount: number;
-  merchant: string;
-  category: string;
-  location: string;
-  risk_score: number;
-  risk_label: string;
-  explanation: string;
-};
-
-type Analytics = {
-  risk_distribution: Record<string, number>;
-  category_risk: Record<string, number>;
-  location_risk: Record<string, number>;
-};
-
-type ApiResponse = {
-  summary: Summary;
-  analytics: Analytics;
-  transactions: Transaction[];
-};
 
 function objectToChartData(data: Record<string, number>) {
   return Object.entries(data).map(([name, value]) => ({
@@ -50,42 +20,6 @@ function objectToChartData(data: Record<string, number>) {
   }));
 }
 
-function downloadCsv(transactions: Transaction[]) {
-  const headers = [
-    "transaction_id",
-    "user_id",
-    "timestamp",
-    "amount",
-    "merchant",
-    "category",
-    "location",
-    "risk_score",
-    "risk_label",
-    "explanation",
-  ];
-
-  const rows = transactions.map((txn) =>
-    headers.map((header) => {
-      const value = txn[header as keyof Transaction];
-      return `"${String(value).replace(/"/g, '""')}"`;
-    }),
-  );
-
-  const csvContent = [
-    headers.join(","),
-    ...rows.map((row) => row.join(",")),
-  ].join("\n");
-
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "fraudshield-report.csv";
-  link.click();
-
-  URL.revokeObjectURL(url);
-}
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
