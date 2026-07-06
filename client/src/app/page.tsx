@@ -11,6 +11,9 @@ import {
 } from "recharts";
 import { ApiResponse } from "@/types/fraud";
 import { downloadCsv } from "@/lib/csv";
+import { SummaryCard } from "@/components/SummaryCard";
+import { ChartCard } from "@/components/ChartCard";
+import { TransactionTable } from "@/components/TransactionTable";
 
 
 function objectToChartData(data: Record<string, number>) {
@@ -130,123 +133,13 @@ export default function Home() {
             </div>
 
             <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-              <div className="p-5 border-b border-slate-800">
-                <h2 className="text-xl font-semibold">Transaction Results</h2>
-              </div>
+          
+              <TransactionTable transactions={data.transactions} />
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-slate-800 text-slate-300">
-                    <tr>
-                      <th className="px-4 py-3 text-left">Transaction</th>
-                      <th className="px-4 py-3 text-left">User</th>
-                      <th className="px-4 py-3 text-left">Amount</th>
-                      <th className="px-4 py-3 text-left">Merchant</th>
-                      <th className="px-4 py-3 text-left">Location</th>
-                      <th className="px-4 py-3 text-left">Risk</th>
-                      <th className="px-4 py-3 text-left">Explanation</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {data.transactions.map((txn) => (
-                      <tr
-                        key={txn.transaction_id}
-                        className="border-t border-slate-800"
-                      >
-                        <td className="px-4 py-3">{txn.transaction_id}</td>
-                        <td className="px-4 py-3">{txn.user_id}</td>
-                        <td className="px-4 py-3">₹{txn.amount}</td>
-                        <td className="px-4 py-3">{txn.merchant}</td>
-                        <td className="px-4 py-3">{txn.location}</td>
-                        <td className="px-4 py-3">
-                          <RiskBadge label={txn.risk_label} />
-                        </td>
-                        <td className="px-4 py-3 text-slate-300 max-w-md">
-                          {txn.explanation}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
             </div>
           </>
         )}
       </section>
     </main>
-  );
-}
-
-function SummaryCard({
-  title,
-  value,
-}: {
-  title: string;
-  value: string | number;
-}) {
-  return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-      <p className="text-sm text-slate-400">{title}</p>
-      <p className="text-3xl font-bold mt-2">{value}</p>
-    </div>
-  );
-}
-
-function ChartCard({
-  title,
-  data,
-}: {
-  title: string;
-  data: { name: string; value: number }[];
-}) {
-  return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-      <h3 className="text-sm font-semibold text-slate-300 mb-4">{title}</h3>
-
-      <div className="h-64">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data}>
-            <XAxis
-              dataKey="name"
-              stroke="#94a3b8"
-              fontSize={12}
-              interval={0}
-              angle={-20}
-              textAnchor="end"
-              height={60}
-            />
-            <YAxis stroke="#94a3b8" fontSize={12} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#020617",
-                border: "1px solid #1e293b",
-                borderRadius: "12px",
-              }}
-              labelStyle={{ color: "#ffffff" }}
-              itemStyle={{ color: "#ffffff" }}
-            />
-            <Bar dataKey="value" fill="#06b6d4" radius={[8, 8, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
-}
-
-function RiskBadge({ label }: { label: string }) {
-  const className =
-    label === "High Risk"
-      ? "bg-red-500/20 text-red-300"
-      : label === "Suspicious"
-        ? "bg-yellow-500/20 text-yellow-300"
-        : "bg-green-500/20 text-green-300";
-
-  return (
-    <span
-      className={`rounded-full px-3 py-1 text-xs font-semibold ${className}`}
-    >
-      {label}
-    </span>
   );
 }
